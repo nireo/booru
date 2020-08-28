@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
+
+	"github.com/nireo/booru/handlers"
+)
 
 func main() {
-	fmt.Println("Hello")
+	http.HandleFunc("/", handlers.ServeHomepage)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		panic(err)
+	}
 }
