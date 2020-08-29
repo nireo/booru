@@ -54,6 +54,10 @@ func main() {
 	// setup http server and all the handlers
 	http.HandleFunc("/board", handlers.GetPostsInBoard)
 	http.HandleFunc("/post", handlers.CreateNewPost)
+	http.HandleFunc("/reply", handlers.CreateComment)
+
+	fs := http.FileServer(http.Dir("images/"))
+	http.Handle("/images/", http.StripPrefix("/images/", fs))
 	http.HandleFunc("/", handlers.ServeHomepage)
 
 	if conf.AdminAccess {

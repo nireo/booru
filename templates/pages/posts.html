@@ -32,9 +32,27 @@
         <button type="submit">Upload</button>
       </div>
     </form>
+    <hr style="margin-top: 1rem; margin-bottom: 1rem;" />
 
     {{ range .Posts }}
-    <li>{{ .Content }}</li>
+    <div style="display: flex; margin-top: 2rem;">
+      <img
+        src="/images/{{ .UUID }}{{ .FileExtension }}"
+        style="height: 10rem;"
+      />
+      <div style="margin-left: 1rem;">
+        <div>
+          <p>
+            {{ .CreatedBy }}
+            <small>
+              {{ .CreatedAt }}
+              <a href="/reply">Reply</a>
+            </small>
+          </p>
+        </div>
+        <p style="margin: 0;">{{ .Content }}</p>
+      </div>
+    </div>
     {{ end }}
   </body>
 </html>
