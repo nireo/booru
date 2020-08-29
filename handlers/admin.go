@@ -13,7 +13,7 @@ func CreateBoard(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
 		newBoard := &models.Board{
-			UUID:  "unique",
+			UUID:  lib.UUID(),
 			Link:  r.FormValue("link"),
 			Title: r.FormValue("title"),
 		}
@@ -28,10 +28,13 @@ func CreateBoard(w http.ResponseWriter, r *http.Request) {
 
 func DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
+	query := r.URL.Query()
+	boardUUID := query.Get("board")
+
 	switch r.Method {
 	case http.MethodPost:
 		var board models.Board
-		if err := db.Where("uuid = ?", "unique").First(&board).Error; err != nil {
+		if err := db.Where("uuid = ?", boardUUID).First(&board).Error; err != nil {
 			http.Error(w, "Board not found", http.StatusNotFound)
 			return
 		}

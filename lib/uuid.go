@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"github.com/lithammer/shortuuid/v3"
+	"github.com/lithammer/shortuuid"
 )
 
 func UUID() string {

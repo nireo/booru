@@ -51,8 +51,9 @@ func main() {
 	lib.SetDatabase(db)
 
 	// setup http server and all the handlers
-	http.HandleFunc("/", handlers.ServeHomepage)
 	http.HandleFunc("/board", handlers.GetPostsInBoard)
+	http.HandleFunc("/post", handlers.CreateNewPost)
+	http.HandleFunc("/", handlers.ServeHomepage)
 
 	if conf.AdminAccess {
 		http.HandleFunc("/board/create", handlers.CreateBoard)

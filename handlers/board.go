@@ -19,16 +19,21 @@ type BoardPage struct {
 
 func GetPostsInBoard(w http.ResponseWriter, r *http.Request) {
 	// fetch board link
-	query := r.URL.Query()
-	boardName := query.Get("board")
+	keys, ok := r.URL.Query()["board"]
+	if !ok || len(keys[0]) < 1 {
+		http.Error(w, "You need to provide board name", http.StatusBadRequest)
+		return
+	}
 
 	// load board and posts
 	db := lib.GetDatabase()
 	var board models.Board
-	if err := db.Where("link = ?", boardName).First(&board); err != nil {
+	if err := db.Where(&models.Board{Link: keys[0]}).First(&board).Error; err != nil {
 		http.Error(w, "Board not found", http.StatusNotFound)
 		return
 	}
+
+	fmt.Println(board)
 
 	// don't return error, since board can be empty
 	var posts []models.Post

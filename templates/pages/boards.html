@@ -8,5 +8,12 @@
   </head>
   <body>
     <h1>Welcome to nooru!</h1>
+    {{ range .Boards }}
+    <li>
+      <a href="/board?board={{ .Link }}">
+        {{ .Title }} {{ .Link }}
+      </a>
+    </li>
+    {{ end }}
   </body>
 </html>
