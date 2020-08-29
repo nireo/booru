@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/nireo/booru/handlers"
+	"github.com/nireo/booru/lib"
 	"github.com/nireo/booru/models"
 )
 
@@ -38,7 +39,7 @@ func main() {
 	json.Unmarshal(inBytes, &conf)
 
 	// database connection and model migration
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s",
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable",
 		conf.DatabaseHost, conf.DatabasePort, conf.DatabaseUser, conf.DatabaseName)
 
 	db, err := gorm.Open("postgres", connectionString)
@@ -47,9 +48,17 @@ func main() {
 	}
 	models.MigrateModels(db)
 	defer db.Close()
+	lib.SetDatabase(db)
 
 	// setup http server and all the handlers
 	http.HandleFunc("/", handlers.ServeHomepage)
+
+	if conf.AdminAccess {
+		http.HandleFunc("/board/create", handlers.CreateBoard)
+		http.HandleFunc("/board/delete", handlers.DeleteBoard)
+		http.HandleFunc("/manage", handlers.ServeManagerPage)
+	}
+
 	if err := http.ListenAndServe(":"+conf.Port, nil); err != nil {
 		panic(err)
 	}

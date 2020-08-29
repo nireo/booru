@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"net/http"
+	"text/template"
 
+	"github.com/nireo/booru/lib"
 	"github.com/nireo/booru/models"
-	"github.com/nireo/upfi/lib"
 )
 
 func CreateBoard(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +40,21 @@ func DeleteBoard(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "http://localhost:8080/", http.StatusMovedPermanently)
 	default:
 		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+}
+
+func ServeManagerPage(w http.ResponseWriter, r *http.Request) {
+	db := lib.GetDatabase()
+	var boards models.Board
+	if err := db.Find(&boards).Error; err != nil {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	tmpl := template.Must(template.ParseFiles("./templates/pages/admin_manage.html"))
+	if err := tmpl.Execute(w, boards); err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 }

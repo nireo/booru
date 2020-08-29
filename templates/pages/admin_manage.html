@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>nooru</title>
+  </head>
+  <body>
+    <h1>Manager boards</h1>
+    <form method="POST" action="http://localhost:8080/admin/create">
+      <div>
+        <input name="name" placeholder="Name" />
+      </div>
+      <div>
+        <input name="link" placeholder="Link" />
+      </div>
+      <button type="submit">Create board</button>
+    </form>
+    {{ range .Boards }}
+    <li>
+      {{.Name}}
+    </li>
+    {{end}}
+  </body>
+</html>
