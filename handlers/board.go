@@ -1,12 +1,21 @@
 package handlers
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"text/template"
 
+	"github.com/nireo/booru/lib"
 	"github.com/nireo/booru/models"
-	"github.com/nireo/upfi/lib"
 )
+
+type BoardPage struct {
+	Board models.Board
+	Posts []models.Post
+}
 
 func GetPostsInBoard(w http.ResponseWriter, r *http.Request) {
 	// fetch board link
@@ -25,9 +34,75 @@ func GetPostsInBoard(w http.ResponseWriter, r *http.Request) {
 	var posts []models.Post
 	db.Model(&board).Related(&posts)
 
+	boardPage := &BoardPage{
+		Board: board,
+		Posts: posts,
+	}
+
 	tmpl := template.Must(template.ParseFiles("./templates/pages/posts.html"))
-	if err := tmpl.Execute(w, posts); err != nil {
+	if err := tmpl.Execute(w, boardPage); err != nil {
 		http.Error(w, "Internal server error", http.StatusNotFound)
 		return
 	}
+}
+
+func CreateNewPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+	db := lib.GetDatabase()
+	query := r.URL.Query()
+	boardName := query.Get("board")
+
+	// make sure the file size is under 10 mbs
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// check if the board exists
+	var board models.Board
+	if err := db.Where("link = ?", boardName).First(&board).Error; err != nil {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	newPost := &models.Post{
+		UUID:          lib.UUID(),
+		CreatedBy:     "Anonymous",
+		Content:       r.FormValue("content"),
+		BoardID:       board.ID,
+		FileExtension: filepath.Ext(handler.Filename),
+	}
+
+	// save the file
+	defer file.Close()
+	filePath := fmt.Sprintf("./images/%s%s", newPost.UUID, newPost.FileExtension)
+	dst, err := os.Create(filePath)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, file); err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// finally create the database entry, and redirect the user to the board page
+	db.NewRecord(newPost)
+	db.Create(newPost)
+	http.Redirect(
+		w, r,
+		fmt.Sprintf("http://localhost:8080/board/?board=%s", board.Link),
+		http.StatusMovedPermanently)
 }

@@ -7,12 +7,12 @@ import (
 
 type Post struct {
 	gorm.Model
-	UUID      string
-	CreatedBy string
-	BoardID   uint
-	Comments  []Comment
-	ImageURL  string
-	Content   string
+	UUID          string
+	CreatedBy     string
+	BoardID       uint
+	Comments      []Comment
+	Content       string
+	FileExtension string
 }
 
 func GetPostComments(id string) ([]Comment, error) {
