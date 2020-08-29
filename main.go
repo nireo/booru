@@ -52,6 +52,7 @@ func main() {
 
 	// setup http server and all the handlers
 	http.HandleFunc("/", handlers.ServeHomepage)
+	http.HandleFunc("/board", handlers.GetPostsInBoard)
 
 	if conf.AdminAccess {
 		http.HandleFunc("/board/create", handlers.CreateBoard)
