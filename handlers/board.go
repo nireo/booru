@@ -33,11 +33,11 @@ func GetPostsInBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(board)
-
 	// don't return error, since board can be empty
 	var posts []models.Post
 	db.Model(&board).Related(&posts)
+
+	fmt.Println(posts)
 
 	boardPage := &BoardPage{
 		Board: board,
@@ -52,31 +52,33 @@ func GetPostsInBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateNewPost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+	db := lib.GetDatabase()
+	// fetch board link
+	keys, ok := r.URL.Query()["board"]
+	if !ok || len(keys[0]) < 1 {
+		http.Error(w, "You need to provide board name", http.StatusBadRequest)
 		return
 	}
-	db := lib.GetDatabase()
-	query := r.URL.Query()
-	boardName := query.Get("board")
 
 	// make sure the file size is under 10 mbs
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// check if the board exists
 	var board models.Board
-	if err := db.Where("link = ?", boardName).First(&board).Error; err != nil {
+	if err := db.Where(&models.Board{Link: keys[0]}).First(&board).Error; err != nil {
 		http.Error(w, "Not found", http.StatusNotFound)
 		return
 	}
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+		fmt.Print(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

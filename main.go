@@ -9,6 +9,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+
 	"github.com/nireo/booru/handlers"
 	"github.com/nireo/booru/lib"
 	"github.com/nireo/booru/models"
