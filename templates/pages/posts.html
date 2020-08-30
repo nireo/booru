@@ -1,45 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>nooru</title>
-  </head>
-  <body>
-    <h1>{{ .Board.Title }}</h1>
-    <hr style="margin-top: 1rem; margin-bottom: 1rem;" />
-    <h3>Create post</h3>
-    <form
-      enctype="multipart/form-data"
-      method="post"
-      action="http://localhost:8080/post?board={{ .Board.Link }}"
-    >
-      <div>
-        <label>File description</label>
-        <textarea name="content" rows="3"></textarea>
-      </div>
-      <div>
-        <label for="choose-file">Choose file</label>
-        <input
-          style="display: none;"
-          type="file"
-          id="choose-file"
-          name="file"
-        />
-      </div>
-      <div>
-        <button type="submit">Upload</button>
-      </div>
-    </form>
-    <hr style="margin-top: 1rem; margin-bottom: 1rem;" />
 
-    {{ range .Posts }}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>nooru</title>
+</head>
+
+<body>
+  <h1>{{ .Board.Title }}</h1>
+  <hr style="margin-top: 1rem; margin-bottom: 1rem;" />
+  <h3>Create post</h3>
+  <form enctype="multipart/form-data" method="post" action="http://localhost:8080/post?board={{ .Board.Link }}">
+    <div>
+      <label>File description</label>
+      <textarea name="content" rows="3"></textarea>
+    </div>
+    <div>
+      <label for="choose-file">Choose file</label>
+      <input style="display: none;" type="file" id="choose-file" name="file" />
+    </div>
+    <div>
+      <button type="submit">Upload</button>
+    </div>
+  </form>
+  <hr style="margin-top: 1rem; margin-bottom: 1rem;" />
+
+  {{ range .Posts }}
+  <div>
     <div style="display: flex; margin-top: 2rem;">
-      <img
-        src="/images/{{ .UUID }}{{ .FileExtension }}"
-        style="height: 10rem;"
-      />
+      <img src="/images/{{ .UUID }}{{ .FileExtension }}" style="height: 10rem;" />
       <div style="margin-left: 1rem;">
         <div>
           <p>
@@ -53,6 +44,11 @@
         <p style="margin: 0;">{{ .Content }}</p>
       </div>
     </div>
+    {{ range .Comments }}
+    <li>{{ .Content }}</li>
     {{ end }}
-  </body>
+  </div>
+  {{ end }}
+</body>
+
 </html>

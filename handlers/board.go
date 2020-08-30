@@ -37,7 +37,10 @@ func GetPostsInBoard(w http.ResponseWriter, r *http.Request) {
 	var posts []models.Post
 	db.Model(&board).Related(&posts)
 
-	fmt.Println(posts)
+	for index := range posts {
+		comments, _ := posts[index].GetComments()
+		posts[index].Comments = comments
+	}
 
 	boardPage := &BoardPage{
 		Board: board,

@@ -30,3 +30,13 @@ func GetPostComments(id string) ([]Comment, error) {
 
 	return comments, nil
 }
+
+func (post *Post) GetComments() ([]Comment, error) {
+	db := lib.GetDatabase()
+	var comments []Comment
+	if err := db.Model(&post).Related(&comments).Error; err != nil {
+		return comments, err
+	}
+
+	return comments, nil
+}
