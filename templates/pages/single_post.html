@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>nooru</title>
+</head>
+
+<body>
+    <div>
+        <div style="display: flex; margin-top: 2rem;">
+            <img src="/images/{{ .Post.UUID }}{{ .Post.FileExtension }}" style="height: 10rem;" />
+            <div style="margin-left: 1rem;">
+                <div>
+                    <p>
+                        {{ .Post.CreatedBy }}
+                        <small>
+                            {{ .Post.CreatedAt }}
+                            <a href="/reply">Reply</a>
+                        </small>
+                    </p>
+                </div>
+                <p style="margin: 0;">{{ .Post.Content }}</p>
+            </div>
+        </div>
+        {{ range .Comments }}
+        <li>{{ .Content }}</li>
+        {{ end }}
+    </div>
+</body>
+
+</html>

@@ -47,6 +47,7 @@
     {{ range .Comments }}
     <li>{{ .Content }}</li>
     {{ end }}
+    <a href="/post?post={{ .UUID }}">Read more</a>
   </div>
   {{ end }}
 </body>

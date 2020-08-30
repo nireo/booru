@@ -6,10 +6,16 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"github.com/nireo/booru/lib"
 	"github.com/nireo/booru/models"
 )
+
+type SinglePostPage struct {
+	Post     models.Post
+	Comments []models.Comment
+}
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
@@ -70,4 +76,32 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	db.Create(newComment)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("successfully answered"))
+}
+
+func GetSinglePost(w http.ResponseWriter, r *http.Request) {
+	db := lib.GetDatabase()
+	keys, ok := r.URL.Query()["post"]
+	if !ok || len(keys[0]) < 1 {
+		http.Error(w, "You need to provide post name", http.StatusBadRequest)
+		return
+	}
+
+	var post models.Post
+	if err := db.Where(&models.Post{UUID: keys[0]}).First(&post).Error; err != nil {
+		http.Error(w, "Post not found", http.StatusNotFound)
+		return
+	}
+
+	comments, _ := post.GetComments()
+
+	singlePostData := &SinglePostPage{
+		Comments: comments,
+		Post:     post,
+	}
+
+	tmpl := template.Must(template.ParseFiles("./templates/pages/single_post.html"))
+	if err := tmpl.Execute(w, singlePostData); err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
