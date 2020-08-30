@@ -12,6 +12,7 @@ import (
 
 	"github.com/nireo/booru/handlers"
 	"github.com/nireo/booru/lib"
+	"github.com/nireo/booru/middleware"
 	"github.com/nireo/booru/models"
 )
 
@@ -51,8 +52,11 @@ func main() {
 	defer db.Close()
 	lib.SetDatabase(db)
 
+	loggingMiddleware := middleware.NestedMiddleware(
+		middleware.LogRequest, middleware.TraceRequest)
+
 	// setup http server and all the handlers
-	http.HandleFunc("/board", handlers.GetPostsInBoard)
+	http.HandleFunc("/board", loggingMiddleware(handlers.GetPostsInBoard))
 	http.HandleFunc("/post", handlers.GetSinglePost)
 	http.HandleFunc("/post/create", handlers.CreateNewPost)
 	http.HandleFunc("/reply", handlers.CreateComment)
