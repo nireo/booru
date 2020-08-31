@@ -47,6 +47,28 @@ func DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	keys, ok := r.URL.Query()["post"]
+	if !ok || len(keys[0]) < 1 {
+		http.Error(w, "You need to provide post id", http.StatusBadRequest)
+		return
+	}
+	db := lib.GetDatabase()
+
+	var post models.Post
+	if err := db.Where(&models.Post{UUID: keys[0]}).First(&post).Error; err != nil {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	db.Delete(&post)
+}
+
 func ServeManagerPage(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
 	var boards models.Board
