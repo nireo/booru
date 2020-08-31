@@ -83,3 +83,35 @@ func ServeManagerPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func AdminLogin(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	store := lib.GetStore()
+	session, _ := store.Get(r, "admin-auth")
+	conf := lib.GetConfiguration()
+
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	if username != conf.AdminCredentials.Username {
+		http.Error(w, "Incorrect credentials", http.StatusForbidden)
+		return
+	}
+
+	if password != conf.AdminCredentials.Password {
+		http.Error(w, "Incorrect credentials", http.StatusForbidden)
+		return
+	}
+
+	session.Values["authorized"] = true
+	if err := session.Save(r, w); err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "http://localhost:8080/", http.StatusMovedPermanently)
+}
