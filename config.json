@@ -1,8 +1,12 @@
 {
-  "port": "8080",
-  "adminAccess": true,
-  "databaseHost": "localhost",
-  "databasePort": "5432",
-  "databaseUser": "postgres",
-  "databaseName": "booru"
+    "port": "8080",
+    "adminAccess": true,
+    "databaseHost": "localhost",
+    "databasePort": "5432",
+    "databaseUser": "postgres",
+    "databaseName": "booru",
+    "adminLogin": {
+        "username": "admin",
+        "password": "password"
+    }
 }
