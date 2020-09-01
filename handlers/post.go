@@ -19,10 +19,15 @@ type SinglePostPage struct {
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
+	if r.Method != http.MethodPost {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
 	// fetch board link
 	keys, ok := r.URL.Query()["post"]
 	if !ok || len(keys[0]) < 1 {
-		http.Error(w, "You need to provide board name", http.StatusBadRequest)
+		http.Error(w, "You need to provide post name", http.StatusBadRequest)
 		return
 	}
 
@@ -36,6 +41,11 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	var post models.Post
 	if err := db.Where(&models.Post{UUID: keys[0]}).First(&post).Error; err != nil {
 		http.Error(w, "Post not found", http.StatusNotFound)
+		return
+	}
+
+	if r.FormValue("content") == "" {
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 

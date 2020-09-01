@@ -57,9 +57,9 @@ func main() {
 
 	// setup http server and all the handlers
 	http.HandleFunc("/board", loggingMiddleware(handlers.GetPostsInBoard))
-	http.HandleFunc("/post", handlers.GetSinglePost)
-	http.HandleFunc("/post/create", handlers.CreateNewPost)
-	http.HandleFunc("/reply", handlers.CreateComment)
+	http.HandleFunc("/post", loggingMiddleware(handlers.GetSinglePost))
+	http.HandleFunc("/post/create", loggingMiddleware(handlers.CreateNewPost))
+	http.HandleFunc("/reply", loggingMiddleware(handlers.CreateComment))
 
 	fs := http.FileServer(http.Dir("images/"))
 	http.Handle("/images/", http.StripPrefix("/images/", fs))
