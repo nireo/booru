@@ -10,6 +10,13 @@ import (
 
 func CreateBoard(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
+	store := lib.GetStore()
+	session, _ := store.Get(r, "admin-auth")
+
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 	switch r.Method {
 	case http.MethodPost:
 		newBoard := &models.Board{
@@ -30,6 +37,13 @@ func DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
 	query := r.URL.Query()
 	boardUUID := query.Get("board")
+	store := lib.GetStore()
+	session, _ := store.Get(r, "admin-auth")
+
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	switch r.Method {
 	case http.MethodPost:
@@ -59,6 +73,13 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	db := lib.GetDatabase()
+	store := lib.GetStore()
+	session, _ := store.Get(r, "admin-auth")
+
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	var post models.Post
 	if err := db.Where(&models.Post{UUID: keys[0]}).First(&post).Error; err != nil {
@@ -71,9 +92,17 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 
 func ServeManagerPage(w http.ResponseWriter, r *http.Request) {
 	db := lib.GetDatabase()
+
 	var boards models.Board
 	if err := db.Find(&boards).Error; err != nil {
 		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+	store := lib.GetStore()
+	session, _ := store.Get(r, "admin-auth")
+
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
