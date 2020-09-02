@@ -66,7 +66,6 @@ func CreateNewPost(w http.ResponseWriter, r *http.Request) {
 	// make sure the file size is under 10 mbs
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -80,7 +79,6 @@ func CreateNewPost(w http.ResponseWriter, r *http.Request) {
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
-		fmt.Print(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

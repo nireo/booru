@@ -48,6 +48,7 @@ func main() {
 	if conf.RestAPIMode {
 		http.HandleFunc("/api/boards", loggingMiddleware(rest_api.ServeBoardJSON))
 		http.HandleFunc("/api/posts", loggingMiddleware(rest_api.ServePostsInBoardJSON))
+		http.HandleFunc("/api/post/create", loggingMiddleware(rest_api.CreatePost))
 	} else {
 		http.HandleFunc("/board", loggingMiddleware(handlers.GetPostsInBoard))
 		http.HandleFunc("/post", loggingMiddleware(handlers.GetSinglePost))
