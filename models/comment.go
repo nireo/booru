@@ -4,9 +4,9 @@ import "github.com/jinzhu/gorm"
 
 type Comment struct {
 	gorm.Model
-	UUID          string
-	CreatedBy     string
+	UUID          string `json:"uuid"`
+	CreatedBy     string `json:"created_by"`
 	PostID        uint
-	Content       string
-	FileExtension string
+	Content       string `json:"content"`
+	FileExtension string `json:"file_extension"`
 }

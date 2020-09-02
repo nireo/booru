@@ -11,6 +11,7 @@ import (
 	"github.com/nireo/booru/lib"
 	"github.com/nireo/booru/middleware"
 	"github.com/nireo/booru/models"
+	"github.com/nireo/booru/rest_api"
 )
 
 type Configuration struct {
@@ -45,7 +46,8 @@ func main() {
 	// (rest api mode only hosts routes that give out json output, and doesn't serve routes that use templates)
 	// images are still served in every mode
 	if conf.RestAPIMode {
-
+		http.HandleFunc("/api/boards", loggingMiddleware(rest_api.ServeBoardJSON))
+		http.HandleFunc("/api/posts", loggingMiddleware(rest_api.ServePostsInBoardJSON))
 	} else {
 		http.HandleFunc("/board", loggingMiddleware(handlers.GetPostsInBoard))
 		http.HandleFunc("/post", loggingMiddleware(handlers.GetSinglePost))
@@ -53,6 +55,7 @@ func main() {
 		http.HandleFunc("/reply", loggingMiddleware(handlers.CreateComment))
 		http.HandleFunc("/", handlers.ServeHomepage)
 	}
+
 	fs := http.FileServer(http.Dir("images/"))
 	http.Handle("/images/", http.StripPrefix("/images/", fs))
 

@@ -7,12 +7,12 @@ import (
 
 type Post struct {
 	gorm.Model
-	UUID          string
-	CreatedBy     string
+	UUID          string `json:"uuid"`
+	CreatedBy     string `json:"created_by"`
 	BoardID       uint
-	Comments      []Comment
-	Content       string
-	FileExtension string
+	Comments      []Comment `json:"comments"`
+	Content       string    `json:"content"`
+	FileExtension string    `json:"file_extension"`
 }
 
 func GetPostComments(id string) ([]Comment, error) {
