@@ -21,7 +21,7 @@
                 <textarea name="content" rows="3"></textarea>
             </div>
             <div>
-                <label for="choose-file">Choose file</label>
+                <label for="choose-file">Choose image</label>
                 <input
                     style="display: none;"
                     type="file"
@@ -36,8 +36,8 @@
         <hr style="margin-top: 1rem; margin-bottom: 1rem;" />
 
         {{ range .Posts }}
-        <div>
-            <div style="display: flex; margin-top: 2rem;">
+        <div style="background-color: #eeeeee;">
+            <div style="display: flex; margin-top: 2rem; margin-bottom: 1rem;">
                 <img
                     src="/images/{{ .UUID }}{{ .FileExtension }}"
                     style="height: 10rem;"
@@ -47,18 +47,26 @@
                         <p>
                             {{ .CreatedBy }}
                             <small>
-                                {{ .CreatedAt }}
+                                {{ .UUID }} {{ .CreatedAt }}
                                 <a href="/reply">Reply</a>
                             </small>
                         </p>
                     </div>
                     <p style="margin: 0;">{{ .Content }}</p>
+                    <div style="margin-top: 1rem;"></div>
+                    <a href="/post?post={{ .UUID }}">Read more</a>
                 </div>
             </div>
             {{ range .Comments }}
-            <li>{{ .Content }}</li>
+            <div style="background-color: #eeeeee; margin-top: 1rem;">
+                <p>
+                    {{ .CreatedBy }}
+                    <small>{{ .UUID }}</small>
+                    <small>{{ .CreatedAt }}</small>
+                </p>
+                <p>{{ .Content }}</p>
+            </div>
             {{ end }}
-            <a href="/post?post={{ .UUID }}">Read more</a>
         </div>
         {{ end }}
     </body>

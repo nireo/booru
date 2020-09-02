@@ -38,7 +38,14 @@
                 </div>
             </div>
             {{ range .Comments }}
-            <li>{{ .Content }}</li>
+            <div style="background-color: #eeeeee; margin-top: 1rem;">
+                <p>
+                    {{ .CreatedBy }}
+                    <small>{{ .UUID }}</small>
+                    <small>{{ .CreatedAt }}</small>
+                </p>
+                <p>{{ .Content }}</p>
+            </div>
             {{ end }}
         </div>
     </body>

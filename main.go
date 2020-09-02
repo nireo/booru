@@ -1,11 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -26,19 +23,8 @@ type Configuration struct {
 }
 
 func main() {
-	// load configuration file
-	var conf Configuration
-	configurationFile, err := os.Open("./config.json")
-	if err != nil {
-		panic(err)
-	}
-	defer configurationFile.Close()
-
-	inBytes, err := ioutil.ReadAll(configurationFile)
-	if err != nil {
-		panic(err)
-	}
-	json.Unmarshal(inBytes, &conf)
+	lib.LoadConfiguration()
+	conf := lib.GetConfiguration()
 
 	// database connection and model migration
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable",
@@ -56,14 +42,19 @@ func main() {
 		middleware.LogRequest, middleware.TraceRequest)
 
 	// setup http server and all the handlers
-	http.HandleFunc("/board", loggingMiddleware(handlers.GetPostsInBoard))
-	http.HandleFunc("/post", loggingMiddleware(handlers.GetSinglePost))
-	http.HandleFunc("/post/create", loggingMiddleware(handlers.CreateNewPost))
-	http.HandleFunc("/reply", loggingMiddleware(handlers.CreateComment))
+	// (rest api mode only hosts routes that give out json output, and doesn't serve routes that use templates)
+	// images are still served in every mode
+	if conf.RestAPIMode {
 
+	} else {
+		http.HandleFunc("/board", loggingMiddleware(handlers.GetPostsInBoard))
+		http.HandleFunc("/post", loggingMiddleware(handlers.GetSinglePost))
+		http.HandleFunc("/post/create", loggingMiddleware(handlers.CreateNewPost))
+		http.HandleFunc("/reply", loggingMiddleware(handlers.CreateComment))
+		http.HandleFunc("/", handlers.ServeHomepage)
+	}
 	fs := http.FileServer(http.Dir("images/"))
 	http.Handle("/images/", http.StripPrefix("/images/", fs))
-	http.HandleFunc("/", handlers.ServeHomepage)
 
 	if conf.AdminAccess {
 		http.HandleFunc("/board/create", handlers.CreateBoard)

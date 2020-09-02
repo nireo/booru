@@ -4,8 +4,8 @@ import "github.com/jinzhu/gorm"
 
 type Board struct {
 	gorm.Model
-	Title string
-	Link  string
-	UUID  string
+	Title string `json:"title"`
+	Link  string `json:"link"`
+	UUID  string `json:"uuid"`
 	Posts []Post
 }
