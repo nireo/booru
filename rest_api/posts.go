@@ -102,3 +102,71 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	db.Create(newPost)
 	json.NewEncoder(w).Encode(newPost)
 }
+
+func CreateComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	keys, ok := r.URL.Query()["post"]
+	if !ok || len(keys[0]) < 1 {
+		http.Error(w, "You need to provide post uuid", http.StatusBadRequest)
+		return
+	}
+
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	db := lib.GetDatabase()
+	var post models.Post
+	if err := db.Where(&models.Post{UUID: keys[0]}).First(&post).Error; err != nil {
+		http.Error(w, "Post not found", http.StatusNotFound)
+		return
+	}
+
+	if r.FormValue("content") == "" {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	withFile := true
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		withFile = false
+	}
+
+	newComment := &models.Comment{
+		UUID:      lib.UUID(),
+		CreatedBy: "Anonymous",
+		Content:   r.FormValue("content"),
+		PostID:    post.ID,
+	}
+
+	if withFile {
+		newComment.FileExtension = filepath.Ext(handler.Filename)
+		// save the file
+		defer file.Close()
+		filePath := fmt.Sprintf("./images/%s%s", newComment.UUID, newComment.FileExtension)
+		dst, err := os.Create(filePath)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		defer dst.Close()
+
+		if _, err := io.Copy(dst, file); err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// finally create the database entry, and redirect the user to the board page
+	db.NewRecord(newComment)
+	db.Create(newComment)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(newComment)
+}
