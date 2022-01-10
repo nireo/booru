@@ -2,12 +2,19 @@
 
 ## Setup
 
+###### Docker
+
+```bash
+$ docker-compose up
+```
+
+Note that this command use default installation configuration described in the docker_config.json. **There are default admin credentials in there**, so make sure to change it. 
+
+###### Standalone
+
 The project is built with golang, but you can create a custom client in any language you want, since booru also works as a rest api. By default booru will serve html which leverages golang templates.
 
-```
-# Installing dependencies
-go get -u github.com/jinzhu/gorm
-
+```bash
 # Creating database (postgresql)
 su - postgres
 createdb dbname
@@ -25,6 +32,7 @@ Most of the fields are quite self explanatory. But the `restApi` field means tha
     "databaseHost": "localhost",
     "databasePort": "5432",
     "databaseUser": "postgres",
+    "databasePass": "postgres",
     "databaseName": "dbname",
     "adminLogin": {
         "username": "admin",
