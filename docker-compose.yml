@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  booru:
+    build: .
+    container_name: booru_imageboard
+    restart: on-failure
+    depends_on: 
+      - booru_db
+    ports:
+      - 80:8080
+
+  booru_db:
+    image: postgres:14-alpine
+    container_name: booru_db
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=booru_admin
+      - POSTGRES_DB=booru_db

@@ -1,0 +1,14 @@
+{
+    "port": "8080",
+    "adminAccess": true,
+    "databaseHost": "booru_db",
+    "databasePort": "5432",
+    "databaseUser": "booru_admin",
+    "databaseName": "booru_db",
+    "databasePass": "booru_admin_password",
+    "adminLogin": {
+        "username": "admin",
+        "password": "password"
+    },
+    "restApi": true
+}
