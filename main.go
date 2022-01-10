@@ -28,8 +28,8 @@ func main() {
 	conf := lib.GetConfiguration()
 
 	// database connection and model migration
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable",
-		conf.DatabaseHost, conf.DatabasePort, conf.DatabaseUser, conf.DatabaseName)
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		conf.DatabaseHost, conf.DatabasePort, conf.DatabaseUser, conf.DatabasePass, conf.DatabaseName)
 
 	db, err := gorm.Open("postgres", connectionString)
 	if err != nil {

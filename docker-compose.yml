@@ -16,4 +16,5 @@ services:
     restart: on-failure
     environment:
       - POSTGRES_USER=booru_admin
+      - POSTGRES_PASSWORD=booru_admin_password
       - POSTGRES_DB=booru_db

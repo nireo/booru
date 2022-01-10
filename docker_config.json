@@ -10,5 +10,5 @@
         "username": "admin",
         "password": "password"
     },
-    "restApi": true
+    "restApi": false
 }

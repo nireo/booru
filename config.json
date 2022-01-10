@@ -5,6 +5,7 @@
     "databasePort": "5432",
     "databaseUser": "postgres",
     "databaseName": "booru",
+    "databasePass": "booru_pass",
     "adminLogin": {
         "username": "admin",
         "password": "password"

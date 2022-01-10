@@ -13,6 +13,7 @@ type Configuration struct {
 	DatabaseHost     string     `json:"databaseHost"`
 	DatabasePort     string     `json:"databasePort"`
 	DatabaseUser     string     `json:"databaseUser"`
+	DatabasePass     string     `json:"databasePass"`
 	AdminCredentials AdminLogin `json:"adminLogin"`
 	RestAPIMode      bool       `json:"restApi"`
 }
